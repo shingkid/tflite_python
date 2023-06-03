@@ -7,6 +7,11 @@ import urllib.request
 from pathlib import Path
 import os
 
+#import Pi GPIO and time modules
+import RPi.GPIO as GPIO
+import time
+
+
 model_dir = None
 test_dir = None
 model_path = None
@@ -64,7 +69,10 @@ def classifyImagesFromFolder():
     classification_label = labels[label_id]
     probability =  np.round(prob * 100, 2)
     print("This is a ", classification_label, ", classified with Accuracy :", probability, "%." , "in ",str(classification_time)+" seconds")
-    #TODO : if we want to integrate with LEDs etc.
+ 
+    if(probability > 90): 
+      print("going to light up LEDs")
+      lightUpLEDs()
 """
 creates required directories to store models and test images (if reqd.)
 downloads and unzips the models  
@@ -102,6 +110,19 @@ def setup() :
   global height, width
   _, height, width, _ = interpreter.get_input_details()[0]['shape']
   #print("Image Shape (", width, ",", height, ")")
+  
+def lightUpLEDs():
+  
+  GPIO.setmode(GPIO.BOARD)
+  GPIO.setwarnings(False)
+
+  #set up which pin to control the LED from and set it to output
+  ledPin = 12
+  GPIO.setup(ledPin, GPIO.OUT)
+  GPIO.output(ledPin,GPIO.HIGH)
+  time.sleep(2)
+  GPIO.output(ledPin,GPIO.LOW)
 
 setup();
 classifyImagesFromFolder();
+
