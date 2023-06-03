@@ -19,3 +19,5 @@ This is a  Egyptian cat , classified with Accuracy : 71.48 %. in  0.056 seconds
 classifying test/Screenshot 2023-06-02 at 4.31.51 PM.png
 This is a  volcano , classified with Accuracy : 98.44 %. in  0.049 seconds
 ```
+
+Note : For Python 3.9.x , tflite 2.7.0 (and for earlier versions, we have to downgrade to 2.5.0
