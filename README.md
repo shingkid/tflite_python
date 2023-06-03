@@ -2,6 +2,7 @@ Steps :
 ```
 Download https://github.com/anirbanchowdhury/tflite_python/archive/refs/heads/master.zip
 Unzip into a directory of choice 
+cd <unzipped folder>
 pip install -r requirements.txt 
 python3 tflite1.py
 ```
