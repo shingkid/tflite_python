@@ -63,7 +63,7 @@ def classifyImagesFromFolder():
     # Return the classification label of the image.
     classification_label = labels[label_id]
     probability =  np.round(prob * 100, 2)
-    print("This is a ", classification_label, ", classified with Accuracy :", probability, "%." , "in ",str(classification_time)+" secpmds")
+    print("This is a ", classification_label, ", classified with Accuracy :", probability, "%." , "in ",str(classification_time)+" seconds")
     #TODO : if we want to integrate with LEDs etc.
 """
 creates required directories to store models and test images (if reqd.)
