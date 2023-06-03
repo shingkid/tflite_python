@@ -7,6 +7,14 @@ import urllib.request
 from pathlib import Path
 import os
 
+model_dir = None
+test_dir = None
+model_path = None
+label_path = None
+interpreter = None
+height = None
+width = None
+
 def load_labels(path): # Read the labels from the text file as a Python list.
   with open(path, 'r') as f:
     return [line.strip() for i, line in enumerate(f.readlines())]
@@ -29,13 +37,15 @@ def classify_image(interpreter, image, top_k=1):
   ordered = np.argpartition(-output, 1)
   return [(i, output[i]) for i in ordered[:top_k]][0]
 
-
+"""
+Attempts to classify all images in the test directory 
+"""
 def classifyImagesFromFolder():
-  exts = [".png", ".jpg"]
+  allowed_file_extensions = [".png", ".jpg"]
   # Same directory
   global test_dir
   print("Will classify images from ",test_dir)
-  files = [p for p in Path(test_dir).iterdir() if p.suffix in exts]
+  files = [p for p in Path(test_dir).iterdir() if p.suffix in allowed_file_extensions]
   for filename in files:
     # do your stuff
     print("classifying " + str(filename))
@@ -50,24 +60,20 @@ def classifyImagesFromFolder():
     # Read class labels.
     labels = load_labels(label_path)
 
-    # Return tpwdhe classification label of the image.
+    # Return the classification label of the image.
     classification_label = labels[label_id]
-    print("This is a ", classification_label, ", classified with Accuracy :", np.round(prob * 100, 2), "%." , "in ",str(classification_time)+" secpmds")
-
-
-model_dir = None
-test_dir = None
-model_path = None
-label_path = None
-interpreter = None
-height = None
-width = None
-
-
+    probability =  np.round(prob * 100, 2)
+    print("This is a ", classification_label, ", classified with Accuracy :", probability, "%." , "in ",str(classification_time)+" secpmds")
+    #TODO : if we want to integrate with LEDs etc.
+"""
+creates required directories to store models and test images (if reqd.)
+downloads and unzips the models  
+loads interpreter and labels
+"""
 def setup() :
   current_dir = "."
   global model_dir
-  model_dir = current_dir + "/models"
+  model_dir = current_dir + "/models_1"
   if not os.path.exists(model_dir):
      os.makedirs(model_dir)
 
@@ -95,7 +101,7 @@ def setup() :
   interpreter.allocate_tensors()
   global height, width
   _, height, width, _ = interpreter.get_input_details()[0]['shape']
-  print("Image Shape (", width, ",", height, ")")
+  #print("Image Shape (", width, ",", height, ")")
 
 setup();
 classifyImagesFromFolder();
