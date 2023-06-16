@@ -8,7 +8,7 @@ python3 tflite1.py
 ```
 
 
-If the installation is successful, this will have the following message :  
+If the installation is successful, this will have the following message (probability, seconds might vary sligtly in the output ):  
 ```
 Model Loaded Successfully.
 Will classify images from  ./test/
