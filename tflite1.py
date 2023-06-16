@@ -32,14 +32,19 @@ def set_input_tensor(interpreter, image):
 def classify_image(interpreter, image, top_k=1):
   set_input_tensor(interpreter, image)
 
+  #Running inference
   interpreter.invoke()
+
+  
   output_details = interpreter.get_output_details()[0]
   output = np.squeeze(interpreter.get_tensor(output_details['index']))
 
+  #Quantization = mapping continuous infinite values to a smaller set of discrete finite values (approximating real-world values with a digital representation) 
   scale, zero_point = output_details['quantization']
   output = scale * (output - zero_point)
-
   ordered = np.argpartition(-output, 1)
+
+  # Getting output image's label as the first output and the probability as the second output  
   return [(i, output[i]) for i in ordered[:top_k]][0]
 
 """
@@ -50,21 +55,28 @@ def classifyImagesFromFolder():
   # Same directory
   global test_dir
   print("Will classify images from ",test_dir)
+  # Read class labels.
+  labels = load_labels(label_path)
+
   files = [p for p in Path(test_dir).iterdir() if p.suffix in allowed_file_extensions]
   for filename in files:
     # do your stuff
+    
     print("classifying " + str(filename))
+
+    #Images from test folder need to be resized to training data size 
     image = Image.open(filename).convert('RGB').resize((width, height))
-    # Classify the image.
+   
     time1 = time.time()
+    
+    #Classifies the image 
     label_id, prob = classify_image(interpreter, image)
+    
     time2 = time.time()
     classification_time = np.round(time2 - time1, 3)
     #print("Classification Time =", classification_time, "seconds.")
 
-    # Read class labels.
-    labels = load_labels(label_path)
-
+   
     # Return the classification label of the image.
     classification_label = labels[label_id]
     probability =  np.round(prob * 100, 2)
@@ -102,11 +114,15 @@ def setup() :
   global label_path
   label_path = model_dir + "/labels_mobilenet_quant_v1_224.txt"
 
+  #Loading TFliteModel 
   global  interpreter
   interpreter = Interpreter(model_path)
   print("Model Loaded Successfully.")
 
+  #Allocate tensors 
   interpreter.allocate_tensors()
+
+  #Get dimensions of input tensors
   global height, width
   _, height, width, _ = interpreter.get_input_details()[0]['shape']
   #print("Image Shape (", width, ",", height, ")")
