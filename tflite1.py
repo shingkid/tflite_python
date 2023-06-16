@@ -28,6 +28,7 @@ def load_labels(path): # Read the labels from the text file as a Python list.
 def set_input_tensor(interpreter, image):
   tensor_index = interpreter.get_input_details()[0]['index']
   input_tensor = interpreter.tensor(tensor_index)()[0]
+  # Resetting the input tensor with the current image's RGB values 
   input_tensor[:, :] = image
 
 def classify_image(interpreter, image, top_k=1):
@@ -35,7 +36,6 @@ def classify_image(interpreter, image, top_k=1):
 
   #Running inference
   interpreter.invoke()
-
   
   output_details = interpreter.get_output_details()[0]
   output = np.squeeze(interpreter.get_tensor(output_details['index']))
@@ -124,7 +124,7 @@ def setup() :
   interpreter = Interpreter(model_path)
   print("Model Loaded Successfully.")
 
-  #Allocate tensors 
+  #Allocate tensors to ensure enough memory is preserved for inference
   interpreter.allocate_tensors()
 
   #Get dimensions of input tensors
